@@ -1,0 +1,76 @@
+@import './base.css';
+
+.i::before {
+  position: absolute;
+  content: '';
+  width: 0;
+  height: 0;
+  top: 7px;
+  left: -11px;
+  border: 6px solid transparent;
+  border-right-color: greenyellow;
+}
+.ii::after {
+  position: absolute;
+  content: '';
+  width: 0;
+  height: 0;
+  top: 7px;
+  right: -11px;
+  border: 6px solid transparent;
+  border-left-color: greenyellow;
+}
+
+.spanL{
+  border: 1px solid greenyellow;
+  background-color: greenyellow;
+  padding: 3px 12px;
+  border-radius: 8px;
+  color: #000;
+}
+
+#app {
+  font-family: "Alimama_ShuHeiTi_Bold";
+  width: 100%;
+  /* height: 100vh; */
+  min-height: 730px;
+}
+
+a,
+.green {
+  text-decoration: none;
+  color: hsla(160, 100%, 37%, 1);
+  transition: 0.4s;
+}
+
+@media (hover: hover) {
+  a:hover {
+    background-color: hsla(160, 100%, 37%, 0.2);
+  }
+}
+
+@media(min-width: 1200px) {
+  #app {
+    background-image: url("@/assets/meinv.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+
+  }
+}
+
+@media (min-width: 1024px) {
+  body {
+    display: flex;
+    place-items: center;
+
+  }
+
+  @media (max-width:1200px) {
+    body {
+      background-image: url("@/assets/girl.jpg");
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+  }
+
+}

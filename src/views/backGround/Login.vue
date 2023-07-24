@@ -1,0 +1,159 @@
+<template>
+  <el-button type="primary" @click="router.push('/')">返回博客首页</el-button>
+  <div class="loginV">
+    <h1>后台管理系统</h1>
+    <div class="iptD">
+      <!-- <div><input placeholder="用户名" /></div>
+      <div><input placeholder="密码" /></div> -->
+      <!-- <el-input placeholder="用户名" v-model="userInfo.uname"></el-input>
+      <el-input placeholder="密码" v-model="userInfo.pwd"></el-input>
+      <div><el-button @click="loginF">登录</el-button></div> -->
+      <el-form
+        ref="ruleFormRef"
+        :model="ruleForm"
+        status-icon
+        :rules="rules"
+        label-width="58px"
+        class="demo-ruleForm"
+      >
+        <el-form-item label="用户名" prop="uname">
+          <el-input v-model="ruleForm.uname" type="text" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="密码" prop="pass">
+          <el-input
+            v-model="ruleForm.pass"
+            type="password"
+            autocomplete="off"
+            show-password
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="submitForm(ruleFormRef)"
+            >登录</el-button
+          >
+          <el-button @click="goRegister()">去注册</el-button>
+        </el-form-item>
+      </el-form>
+    </div>
+  </div>
+</template>
+<script lang="ts" setup>
+import { reactive, ref, watch } from "@vue/runtime-core";
+import { ElMessage } from "element-plus";
+import { useRouter,useRoute } from "vue-router";
+import type { FormInstance } from "element-plus";
+import { reqLogin } from "../../api";
+import { useMainStore } from "../../store/user";
+import { storeToRefs } from "pinia"
+import { onBeforeRouteUpdate } from "vue-router";
+
+const useStore = useMainStore()
+const { loginInfo } = storeToRefs(useStore)
+
+const ruleFormRef = ref<FormInstance>();
+
+const validateName = (rule: any, value: any, callback: any) => {
+  if (!value) {
+    return callback(new Error("请输入用户名"));
+  }
+
+  if (value.length < 3) {
+    callback(new Error("长度至少为3个字符"));
+  }
+  callback();
+};
+
+const validatePass = (rule: any, value: any, callback: any) => {
+  if (value === "") {
+    callback(new Error("请输入密码"));
+  } else {
+    if (ruleForm.pass.length < 6) {
+      callback(new Error("密码长度至少为6位"));
+    }
+    callback();
+  }
+};
+const ruleForm = reactive({
+  pass: "",
+  uname: "",
+});
+
+const rules = reactive({
+  pass: [{ validator: validatePass, trigger: "blur" }],
+  uname: [{ validator: validateName, trigger: "blur" }],
+});
+
+const submitForm = (formEl: FormInstance | undefined) => {
+  if (!formEl) return;
+  formEl.validate(async (valid) => {
+    if (valid) {
+      let res = await reqLogin(ruleForm);
+      if (res.data.status === 0) {
+        console.log(res.data);
+        loginInfo.value.adminName = res.data.data.username
+        loginInfo.value.adminToken = res.data.data.token
+        router.push("/admin/index")
+        open()
+      }else{
+        const errOpen = () => {
+          ElMessage({
+            message: res.data.message,
+            type:'error'
+          });
+        };
+        errOpen()
+      }
+    } else {
+      console.log("error submit!");
+      return false;
+    }
+  });
+};
+const goRegister = ()=>{
+    router.push('/admin/register')
+}
+
+const router = useRouter();
+
+const open = () => {
+  ElMessage({
+    message: "欢迎进入博客后台管理",
+    type: "success",
+  });
+};
+
+onBeforeRouteUpdate((to, from)=>{
+
+}) 
+
+  
+</script>
+<style lang="less" scoped>
+.loginV {
+  width: 500px;
+  height: 300px;
+  background-color: #f2f6fc;
+  margin: 198px auto;
+  border-radius: 8px;
+  h1 {
+    margin: 0;
+    height: 80px;
+    line-height: 80px;
+    text-align: center;
+  }
+  input {
+    border-radius: 16px;
+  }
+
+  .iptD {
+    width: 60%;
+    margin: 60px auto;
+
+    .el-input {
+    }
+    .el-button {
+      margin: 0px 12px;
+    }
+  }
+}
+</style>
